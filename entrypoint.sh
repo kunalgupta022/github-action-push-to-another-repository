@@ -26,13 +26,21 @@ then
 	USER_NAME="$DESTINATION_GITHUB_USERNAME"
 fi
 
+TARGET_BRANCH_EXISTS=true
+
 CLONE_DIR=$(mktemp -d)
 
 echo "[+] Cloning destination git repository $DESTINATION_REPOSITORY_NAME"
 # Setup git
 git config --global user.email "$USER_EMAIL"
 git config --global user.name "$USER_NAME"
+{ # try
 git clone --single-branch --branch "$TARGET_BRANCH" "https://$USER_NAME:$API_TOKEN_GITHUB@$GITHUB_SERVER/$DESTINATION_REPOSITORY_USERNAME/$DESTINATION_REPOSITORY_NAME.git" "$CLONE_DIR"
+} || { # on no such remote branch, pull default branch instead
+  echo "The input target branch does not already exist on the target repository. It will be created."
+git clone --single-branch "https://$USER_NAME:$API_TOKEN_GITHUB@$GITHUB_SERVER/$DESTINATION_REPOSITORY_USERNAME/$DESTINATION_REPOSITORY_NAME.git" "$CLONE_DIR"
+  TARGET_BRANCH_EXISTS=false
+}
 ls -la "$CLONE_DIR"
 
 TEMP_DIR=$(mktemp -d)
@@ -88,6 +96,11 @@ cd "$CLONE_DIR"
 echo "[+] Files that will be pushed"
 ls -la
 
+# Create branch locally if it doesn't already exist locally
+if [ "$TARGET_BRANCH_EXISTS" = false ] ; then
+  git checkout -b "$TARGET_BRANCH"
+fi
+
 ORIGIN_COMMIT="https://$GITHUB_SERVER/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
 COMMIT_MESSAGE="${COMMIT_MESSAGE/ORIGIN_COMMIT/$ORIGIN_COMMIT}"
 COMMIT_MESSAGE="${COMMIT_MESSAGE/\$GITHUB_REF/$GITHUB_REF}"
@@ -102,6 +115,6 @@ echo "[+] git diff-index:"
 # git diff-index : to avoid doing the git commit failing if there are no changes to be commit
 git diff-index --quiet HEAD || git commit --message "$COMMIT_MESSAGE"
 
-echo "[+] Pushing git commit"
-# --set-upstream: sets de branch when pushing to a branch that does not exist
+echo "Pushing git commit. Create branch if none exists."
+# --set-upstream also creates the branch if it doesn't already exist in the destination repository
 git push "https://$USER_NAME:$API_TOKEN_GITHUB@$GITHUB_SERVER/$DESTINATION_REPOSITORY_USERNAME/$DESTINATION_REPOSITORY_NAME.git" --set-upstream "$TARGET_BRANCH"
