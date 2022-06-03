@@ -15,6 +15,8 @@ DESTINATION_REPOSITORY_USERNAME="$8"
 TARGET_BRANCH="$9"
 COMMIT_MESSAGE="${10}"
 TARGET_DIRECTORY="${11}"
+GIT_TAG_NAME="${12}"
+GIT_TAG_MESSAGE="${13}"
 
 if [ -z "$DESTINATION_REPOSITORY_USERNAME" ]
 then
@@ -114,6 +116,17 @@ git status
 echo "[+] git diff-index:"
 # git diff-index : to avoid doing the git commit failing if there are no changes to be commit
 git diff-index --quiet HEAD || git commit --message "$COMMIT_MESSAGE"
+
+# Createing Tag commit is Tag Name is specified
+if [ ! -n "$GIT_TAG_NAME" ]
+then
+	if [ -n "GIT_TAG_MESSAGE"]
+	then
+		git tag -a "$GIT_TAG_NAME" HEAD 
+	else
+		git tag -a "$GIT_TAG_NAME" HEAD -m "$GIT_TAG_MESSAGE"
+	fi
+fi
 
 echo "Pushing git commit. Create branch if none exists."
 # --set-upstream also creates the branch if it doesn't already exist in the destination repository
