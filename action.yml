@@ -70,6 +70,8 @@ runs:
     - '${{ inputs.target-branch }}'
     - '${{ inputs.commit-message }}'
     - '${{ inputs.target-directory }}'
+    - '${{ inputs.git-tag-name }}'
+    - '${{ inputs.git-tag-message }}'
 branding:
   icon: git-commit
   color: green
