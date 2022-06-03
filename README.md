@@ -46,7 +46,7 @@ The string `ORIGIN_COMMIT` is replaced by `$REPOSITORY_URL@commit`.
 Tag name for the Git Tag to be created. If not specified, Git Tag is not created.
 
 ### `git-tag-message` (argument) [optional]
-Commit message for the Git Tag to be created.
+Commit message for the Git Tag to be created. Defaults to the empty string.
 
 ### `API_TOKEN_GITHUB` (environment)
 E.g.:
