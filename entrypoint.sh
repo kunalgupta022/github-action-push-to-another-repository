@@ -123,8 +123,10 @@ echo "Pushing git commit. Create branch if none exists."
 # --set-upstream also creates the branch if it doesn't already exist in the destination repository
 git push "https://$USER_NAME:$API_TOKEN_GITHUB@$GITHUB_SERVER/$DESTINATION_REPOSITORY_USERNAME/$DESTINATION_REPOSITORY_NAME.git" --set-upstream "$TARGET_BRANCH"
 
+echo "[+] Create tag commit: "$GIT_TAG_NAME
+
 # Createing Tag commit is Tag Name is specified
-if [ ! -n "$GIT_TAG_NAME" ]
+if [ ! -z "$GIT_TAG_NAME" ]
 then
 	echo "[+] Create tag commit: "$GIT_TAG_NAME
 	git tag -a "$GIT_TAG_NAME" HEAD -m "$GIT_TAG_MESSAGE"
