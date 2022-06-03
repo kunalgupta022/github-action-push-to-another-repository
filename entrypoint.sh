@@ -126,8 +126,12 @@ git push "https://$USER_NAME:$API_TOKEN_GITHUB@$GITHUB_SERVER/$DESTINATION_REPOS
 # Createing Tag commit is Tag Name is specified
 if [ ! -n "$GIT_TAG_NAME" ]
 then
+	echo "[+] Create tag commit: "$GIT_TAG_NAME
 	git tag -a "$GIT_TAG_NAME" HEAD -m "$GIT_TAG_MESSAGE"
+
+
+	# Push the tags to origin
+	echo "[+] push git tag"
+	git push "https://$USER_NAME:$API_TOKEN_GITHUB@$GITHUB_SERVER/$DESTINATION_REPOSITORY_USERNAME/$DESTINATION_REPOSITORY_NAME.git" --tags
 fi
 
-# Push the tags to origin
-git push "https://$USER_NAME:$API_TOKEN_GITHUB@$GITHUB_SERVER/$DESTINATION_REPOSITORY_USERNAME/$DESTINATION_REPOSITORY_NAME.git" --tags
